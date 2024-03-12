@@ -1,6 +1,3 @@
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import {
   incremented,
@@ -8,23 +5,31 @@ import {
   incrementedBy,
   setToZero,
 } from "./features/counter/counter-slices";
+import { useFetchBreedsQuery } from "./features/cats/cats-api-slice";
+import { Suspense } from "react";
 
 function App() {
   const count = useAppSelector((state) => state.counter.value);
   const dispatch = useAppDispatch();
 
+  const { data, isFetching } = useFetchBreedsQuery(10);
 
+  console.log(data)
   return (
     <>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+       {isFetching ? <p>Loading...</p> :  <p>{data?.length} cats breeds fetched</p>}
+       <section className="grid grid-cols-4 gap-2">
+       {data && data.map((breed) => {
+        return <div className="relative" key={breed.id}>
+          <p className="absolute bottom-0 p-2 bg-gradient-to-r from-white/50 to-transparent">{breed.name}</p>
+          <Suspense fallback={<p>Loading...</p>}>
+            <img className="w-full h-full object-cover" src={breed.image.url} alt={breed.name} />
+          </Suspense>
+        </div>
+       })}
+       </section>
       </div>
-      <h1>Vite + React</h1>
       {count}
       <div className="card">
         <button onClick={() => dispatch(incremented())}>
@@ -39,14 +44,8 @@ function App() {
         <button onClick={() => dispatch(setToZero())}>
           set to zero
         </button>
-        
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+     
     </>
   );
 }
