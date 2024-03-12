@@ -1,10 +1,18 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+import "./App.css";
+import { useAppDispatch, useAppSelector } from "./app/hooks";
+import {
+  incremented,
+  decremented,
+  incrementedBy,
+  setToZero,
+} from "./features/counter/counter-slices";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const count = useAppSelector((state) => state.counter.value);
+  const dispatch = useAppDispatch();
+
 
   return (
     <>
@@ -17,10 +25,21 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
+      {count}
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+        <button onClick={() => dispatch(incremented())}>
+          increment
         </button>
+        <button onClick={() => dispatch(decremented())}>
+          decrement
+        </button>
+        <button onClick={() => dispatch(incrementedBy(10))}>
+          increment by 10
+        </button>
+        <button onClick={() => dispatch(setToZero())}>
+          set to zero
+        </button>
+        
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
@@ -29,7 +48,7 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
